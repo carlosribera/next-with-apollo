@@ -1,0 +1,71 @@
+"use client";
+
+import { gql, useQuery } from "@apollo/client";
+import {IconDelete, IconEdit} from '../components/icons'
+import DataTable from "react-data-table-component";
+
+const query = gql`
+query {
+  purchases {
+    id
+    idCliente
+    precioTotal
+  }
+}
+`;
+
+function PurchasesPage() {
+  const { data, loading, error } = useQuery(query);
+
+  // console.log(data)
+
+  if (loading) return <p className="text-3xl font-bold text-center text-white h-screen flex items-center justify-center">Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const purchases = data?.purchases || [];
+
+  const columns = [
+    {
+      name: "ID CLIENTE",
+      selector: (row) => row.idCliente,
+    },
+    {
+      name: "PRECIO TOTAL",
+      selector: (row) => row.precioTotal,
+    },
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontSize: "14px",
+        fontWeight: "bold",
+        color: "#FFFFFF",
+        backgroundColor: "#155E75",
+      },
+    },
+  };
+  return (
+    <div className="bg-gray-100 flex flex-col justify-center items-center h-screen">
+      <h2 className="text-3xl font-bold text-center text-black mb-10">LISTA DE COMPRAS</h2>
+      {purchases.length > 0 ? (
+        <div className="rounded-t-2xl">
+
+        <DataTable
+        customStyles={customStyles}
+        columns={columns}
+        data={purchases}
+        pagination
+        paginationPerPage={6}
+        fixedHeader
+        highlightOnHover
+        noDataComponent="No existen Clientes registrados"
+      />
+    </div>
+      ) : (
+        <p>No purchases</p>
+      )}
+    </div>
+  );
+}
+export default PurchasesPage;
