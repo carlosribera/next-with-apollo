@@ -2,20 +2,32 @@
 import { HttpLink } from "@apollo/client";
 import {
     ApolloNextAppProvider,
-    ApolloClient, 
+    ApolloClient,
     InMemoryCache
 } from "@apollo/experimental-nextjs-app-support"
+import { setContext } from "@apollo/client/link/context";
 
 function makeClient() {
     const httpLink = new HttpLink({
         uri: "http://localhost:9090/graphql",
-        credentials: "same-origin"
-    })
+        // uri: "http://localhost:8080/graphql",
+    });
 
+    const authLink = setContext((_, { headers }) => {
+        const token = localStorage.getItem('token');
+        return {
+            headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : "",
+            },
+        };
+    });
+ 
     return new ApolloClient({
         ssrMode: typeof window === "undefined",
         cache: new InMemoryCache(),
-        link: httpLink
+        // link: httpLink,
+        link: authLink.concat(httpLink),
     })
 }
 export function ApolloWrapper({ children }) {

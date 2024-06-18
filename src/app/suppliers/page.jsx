@@ -4,14 +4,15 @@ import Link from "next/link";
 import { gql, useQuery } from "@apollo/client";
 import { IconDelete, IconEdit } from "../components/icons";
 import DataTable from "react-data-table-component";
+import DeleteButton from "./delete/page";
 
 export const GET_SUPPLIERS = gql`
   query {
-    suppliers {
+    getAllSuppliers {
       id
       name
       nit
-      telefono
+      phone
     }
   }
 `;
@@ -27,9 +28,13 @@ function SupplierPage() {
         Loading...
       </p>
     );
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) {
+    if (error.message === "Forbidden") {
+      window.location.href = "/dashboard";
+    }
+  }
 
-  const suppliers = data?.suppliers || [];
+  const suppliers = data?.getAllSuppliers || [];
 
   const columns = [
     {
@@ -42,7 +47,22 @@ function SupplierPage() {
     },
     {
       name: "TELEFONO",
-      selector: (row) => row.telefono,
+      selector: (row) => row.phone,
+    },
+    {
+      name: "ACCIONES", // Agregar esta línea
+      cell: (row) => (
+        <div className="flex justify-center items-center gap-2">
+          <Link href={`/suppliers/update?id=${row.id}`}>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-2 text-sm font-bold rounded flex items-center">
+              {IconEdit}
+            </button>
+          </Link>
+          <div className="bg-red-500 hover:bg-red-700 text-white py-2 px-2 text-sm font-bold rounded flex items-center">
+            <DeleteButton id={row.id} />
+          </div>
+        </div>
+      ),
     },
   ];
 
@@ -58,32 +78,28 @@ function SupplierPage() {
   };
   return (
     <div className="bg-gray-100 flex flex-col justify-center items-center h-screen">
-      {suppliers.length > 0 ? (
-        <div className="rounded-t-2xl">
-          <div className="flex gap-4">
-            <h2 className="text-3xl font-bold text-center text-black mb-10">
-              LISTA DE PROVEEDORES
-            </h2>
-            <Link href="/supplier/create">
-              <button className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-xl">
-                Agregar
-              </button>
-            </Link>
-          </div>
-            <DataTable
-              customStyles={customStyles}
-              columns={columns}
-              data={suppliers}
-              pagination
-              paginationPerPage={6}
-              fixedHeader
-              highlightOnHover
-              noDataComponent="No existen Clientes registrados"
-            />
+      <div className="rounded-t-2xl">
+        <div className="flex gap-4">
+          <h2 className="text-3xl font-bold text-center text-black mb-10">
+            LISTA DE PROVEEDORES
+          </h2>
+          <Link href="/suppliers/create">
+            <button className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-xl">
+              Agregar
+            </button>
+          </Link>
         </div>
-      ) : (
-        <p>No suppliers</p>
-      )}
+        <DataTable
+          customStyles={customStyles}
+          columns={columns}
+          data={suppliers}
+          pagination
+          paginationPerPage={6}
+          fixedHeader
+          highlightOnHover
+          noDataComponent="No existen proveedores registrados"
+        />
+      </div>
     </div>
   );
 }

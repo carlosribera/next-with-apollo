@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <ApolloWrapper>
-        {children}
+          {children}
         </ApolloWrapper>
       </body>
     </html>

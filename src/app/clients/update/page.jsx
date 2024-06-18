@@ -2,20 +2,22 @@
 
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { useRouter } from 'next/navigation';
-import { GET_SUPPLIERS } from "../page";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { GET_CLIENTS } from "../page";
 
-const CREATE_SUPPLIER = gql`
-  mutation CreateSupplier($supplierInput: SupplierInput!) {
-    createSupplier(supplierInput: $supplierInput) {
+const UPDATE_CLIENT = gql`
+  mutation UpdateClient($id: ID!, $clientInput: ClientInput!) {
+    updateClient(id: $id, clientInput: $clientInput) {
       name
       nit
       phone
     }
   }
 `;
-export default function CreateSupplier() {
+export default function UpdateClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   
   const [formData, setFormData] = useState({
     name: "",
@@ -23,10 +25,11 @@ export default function CreateSupplier() {
     phone: "",
   });
 
-  const [createSupplier] = useMutation(CREATE_SUPPLIER, {
-    refetchQueries: [{ query: GET_SUPPLIERS }],
+  const [updateClient ] = useMutation(UPDATE_CLIENT, {
+    refetchQueries: [{ query: GET_CLIENTS }],
+    
     onCompleted: () => {
-      router.push("/suppliers");
+        router.push("/clients");
     },
   });
   const handleChange = (e) => {
@@ -41,10 +44,12 @@ export default function CreateSupplier() {
     e.preventDefault();
     console.log(formData);
     // Aquí puedes agregar la lógica para enviar los datos del formulario
+
     try {
-      await createSupplier({
+      await updateClient({
         variables: {
-          supplierInput: {
+          id,
+          clientInput: {
             name: formData.name,
             nit: formData.nit,
             phone: formData.phone,
@@ -52,7 +57,7 @@ export default function CreateSupplier() {
         },
       });
     } catch(err) {
-      console.error('Error creando el proveedor', err);
+      console.error('Error actualizando el cliente', err);
     }
   };
   return (
@@ -60,10 +65,9 @@ export default function CreateSupplier() {
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
         
           <h2 className="text-3xl font-bold text-center text-black mb-10">
-            Agregar Proveedor
+            Actualizar Cliente
           </h2>
           
-
         <form
           onSubmit={handleSubmit}
           className="max-w-lg mx-auto p-4 bg-white shadow-md rounded-md"
@@ -96,7 +100,7 @@ export default function CreateSupplier() {
           </div>
           <div className="mb-4">
             <label htmlFor="phone" className="block text-gray-700">
-              Telefono
+              telefono
             </label>
             <input
               type="text"

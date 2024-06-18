@@ -26,7 +26,11 @@ function SalesPage() {
         Loading...
       </p>
     );
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) {
+    if (error.message === "Forbidden") {
+      window.location.href = "/dashboard";
+    }
+  }
 
   const sales = data?.getAllSales || [];
 

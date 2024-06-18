@@ -2,31 +2,36 @@
 
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { useRouter } from 'next/navigation';
-import { GET_SUPPLIERS } from "../page";
+import { useRouter, useSearchParams } from "next/navigation";
+import { GET_PRODUCTS } from "../page";
 
-const CREATE_SUPPLIER = gql`
-  mutation CreateSupplier($supplierInput: SupplierInput!) {
-    createSupplier(supplierInput: $supplierInput) {
+const UPDATE_PRODUCT = gql`
+  mutation UpdateProduct($id: ID!, $productInput: ProductInput!) {
+    updateProduct(id: $id, productInput: $productInput) {
       name
-      nit
-      phone
+      price
+      imageUrl
+      description
     }
   }
 `;
-export default function CreateSupplier() {
+export default function UpdateClient() {
   const router = useRouter();
-  
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const [formData, setFormData] = useState({
     name: "",
-    nit: "",
-    phone: "",
+    price: "",
+    imageUrl: "",
+    description: "",
   });
 
-  const [createSupplier] = useMutation(CREATE_SUPPLIER, {
-    refetchQueries: [{ query: GET_SUPPLIERS }],
+  const [updateClient] = useMutation(UPDATE_PRODUCT, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+
     onCompleted: () => {
-      router.push("/suppliers");
+      router.push("/products");
     },
   });
   const handleChange = (e) => {
@@ -41,28 +46,29 @@ export default function CreateSupplier() {
     e.preventDefault();
     console.log(formData);
     // Aquí puedes agregar la lógica para enviar los datos del formulario
+
     try {
-      await createSupplier({
+      await updateClient({
         variables: {
-          supplierInput: {
+          id,
+          productInput: {
             name: formData.name,
-            nit: formData.nit,
-            phone: formData.phone,
+            price: parseFloat(formData.price),
+            imageUrl: formData.imageUrl,
+            description: formData.description,
           },
         },
       });
-    } catch(err) {
-      console.error('Error creando el proveedor', err);
+    } catch (err) {
+      console.error("Error actualizando el cliente", err);
     }
   };
   return (
     <>
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-        
-          <h2 className="text-3xl font-bold text-center text-black mb-10">
-            Agregar Proveedor
-          </h2>
-          
+        <h2 className="text-3xl font-bold text-center text-black mb-10">
+          Actualizar Cliente
+        </h2>
 
         <form
           onSubmit={handleSubmit}
@@ -82,36 +88,49 @@ export default function CreateSupplier() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="nit" className="block text-gray-700">
-              nit
+            <label htmlFor="price" className="block text-gray-700">
+              Precio
             </label>
             <input
               type="text"
-              id="nit"
-              name="nit"
-              value={formData.nit}
+              id="price"
+              name="price"
+              value={formData.price}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700">
-              Telefono
+            <label htmlFor="imageUrl" className="block text-gray-700">
+              url
             </label>
             <input
               type="text"
-              id="phone"
-              name="phone"
-              value={formData.phone}
+              id="imageUrl"
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-gray-700">
+              Descripcion
+            </label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              value={formData.description}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Agregar
+            Actualizar
           </button>
         </form>
       </div>

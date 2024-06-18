@@ -13,8 +13,10 @@ const LOGIN_USER = gql`
 export const useLoginUser = () => {
   return useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      localStorage.setItem("token", data.login.token);
-      window.location.href = "/dashboard";
+      if (data.login.message === "User loged succesfully") {
+        localStorage.setItem("token", data.login.token);
+        window.location.href = "/dashboard";
+      }
     },
   });
 };

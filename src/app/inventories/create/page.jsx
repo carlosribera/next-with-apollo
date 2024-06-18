@@ -3,30 +3,32 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from 'next/navigation';
-import { GET_SUPPLIERS } from "../page";
+import { GET_INVENTORIES } from "../page";
 
-const CREATE_SUPPLIER = gql`
-  mutation CreateSupplier($supplierInput: SupplierInput!) {
-    createSupplier(supplierInput: $supplierInput) {
-      name
-      nit
-      phone
+const CREATE_INVENTORY = gql`
+  mutation create_inventory($inventoryInput: InventoryInput) {
+    createInventory(inventoryInput: $inventoryInput) {
+    warehouseId,
+    productId,
+    quantity,
+    section
     }
   }
 `;
-export default function CreateSupplier() {
+export default function CreateInventory() {
   const router = useRouter();
-  
   const [formData, setFormData] = useState({
-    name: "",
-    nit: "",
-    phone: "",
+    warehouseId: "",
+    productId: "",
+    quantity: "",
+    section: "",
   });
 
-  const [createSupplier] = useMutation(CREATE_SUPPLIER, {
-    refetchQueries: [{ query: GET_SUPPLIERS }],
+  const [createInventory] = useMutation(CREATE_INVENTORY, {
+    
+    refetchQueries: [{ query: GET_INVENTORIES }],
     onCompleted: () => {
-      router.push("/suppliers");
+      router.push("/inventories");
     },
   });
   const handleChange = (e) => {
@@ -41,68 +43,77 @@ export default function CreateSupplier() {
     e.preventDefault();
     console.log(formData);
     // Aquí puedes agregar la lógica para enviar los datos del formulario
-    try {
-      await createSupplier({
-        variables: {
-          supplierInput: {
-            name: formData.name,
-            nit: formData.nit,
-            phone: formData.phone,
-          },
+    createInventory({
+      variables: {
+        inventoryInput: {
+          warehouseId: formData.warehouseId,
+          productId: formData.productId,
+          quantity: parseInt(formData.quantity),
+          section: formData.section,
         },
-      });
-    } catch(err) {
-      console.error('Error creando el proveedor', err);
-    }
+      },
+    });
   };
   return (
     <>
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-        
-          <h2 className="text-3xl font-bold text-center text-black mb-10">
-            Agregar Proveedor
-          </h2>
-          
 
+        <h2 className="text-3xl font-bold text-center text-black mb-10">
+          Agregar Inventario
+        </h2>
+        
         <form
           onSubmit={handleSubmit}
           className="max-w-lg mx-auto p-4 bg-white shadow-md rounded-md"
         >
           <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700">
-              Nombre
+            <label htmlFor="warehouseId" className="block text-gray-700">
+              ID ALMACEN
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="warehouseId"
+              name="warehouseId"
+              value={formData.warehouseId}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="nit" className="block text-gray-700">
-              nit
+            <label htmlFor="productId" className="block text-gray-700">
+              ID PRODUCTO
             </label>
             <input
               type="text"
-              id="nit"
-              name="nit"
-              value={formData.nit}
+              id="productId"
+              name="productId"
+              value={formData.productId}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700">
-              Telefono
+            <label htmlFor="quantity" className="block text-gray-700">
+              Cantidad
             </label>
             <input
               type="text"
-              id="phone"
-              name="phone"
-              value={formData.phone}
+              id="quantity"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="section" className="block text-gray-700">
+              Seccion
+            </label>
+            <input
+              type="text"
+              id="section"
+              name="section"
+              value={formData.section}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />

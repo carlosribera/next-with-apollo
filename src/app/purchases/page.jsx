@@ -1,17 +1,17 @@
 "use client";
 
 import { gql, useQuery } from "@apollo/client";
-import {IconDelete, IconEdit} from '../components/icons'
+import { IconDelete, IconEdit } from "../components/icons";
 import DataTable from "react-data-table-component";
 
 const query = gql`
-query {
-  purchases {
-    id
-    idCliente
-    precioTotal
+  query {
+    getAllPurchases {
+      id
+      idSupplier
+      precioTotal
+    }
   }
-}
 `;
 
 function PurchasesPage() {
@@ -19,15 +19,24 @@ function PurchasesPage() {
 
   // console.log(data)
 
-  if (loading) return <p className="text-3xl font-bold text-center text-white h-screen flex items-center justify-center">Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading)
+    return (
+      <p className="text-3xl font-bold text-center text-white h-screen flex items-center justify-center">
+        Loading...
+      </p>
+    );
+  if (error) {
+    if (error.message === "Forbidden") {
+      window.location.href = "/dashboard";
+    }
+  }
 
-  const purchases = data?.purchases || [];
+  const purchases = data?.getAllPurchases || [];
 
   const columns = [
     {
-      name: "ID CLIENTE",
-      selector: (row) => row.idCliente,
+      name: "ID PROVEEDOR",
+      selector: (row) => row.idSupplier,
     },
     {
       name: "PRECIO TOTAL",
@@ -47,21 +56,22 @@ function PurchasesPage() {
   };
   return (
     <div className="bg-gray-100 flex flex-col justify-center items-center h-screen">
-      <h2 className="text-3xl font-bold text-center text-black mb-10">LISTA DE COMPRAS</h2>
+      <h2 className="text-3xl font-bold text-center text-black mb-10">
+        LISTA DE COMPRAS
+      </h2>
       {purchases.length > 0 ? (
         <div className="rounded-t-2xl">
-
-        <DataTable
-        customStyles={customStyles}
-        columns={columns}
-        data={purchases}
-        pagination
-        paginationPerPage={6}
-        fixedHeader
-        highlightOnHover
-        noDataComponent="No existen Clientes registrados"
-      />
-    </div>
+          <DataTable
+            customStyles={customStyles}
+            columns={columns}
+            data={purchases}
+            pagination
+            paginationPerPage={6}
+            fixedHeader
+            highlightOnHover
+            noDataComponent="No existen Clientes registrados"
+          />
+        </div>
       ) : (
         <p>No purchases</p>
       )}

@@ -2,31 +2,34 @@
 
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { useRouter } from 'next/navigation';
-import { GET_SUPPLIERS } from "../page";
+import { useRouter, useSearchParams } from "next/navigation";
+import { GET_WAREHOUSES } from "../page";
 
-const CREATE_SUPPLIER = gql`
-  mutation CreateSupplier($supplierInput: SupplierInput!) {
-    createSupplier(supplierInput: $supplierInput) {
+const UPADATE_WAREHOUSE = gql`
+  mutation UpdateWarehouse($id: ID!, $warehouseInput: WarehouseInput!) {
+    updateWarehouse(id: $id, warehouseInput: $warehouseInput) {
       name
-      nit
+      location
       phone
     }
   }
 `;
-export default function CreateSupplier() {
+export default function UpdateWarehouse() {
   const router = useRouter();
-  
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const [formData, setFormData] = useState({
     name: "",
-    nit: "",
+    location: "",
     phone: "",
   });
 
-  const [createSupplier] = useMutation(CREATE_SUPPLIER, {
-    refetchQueries: [{ query: GET_SUPPLIERS }],
+  const [updateWarehouse] = useMutation(UPADATE_WAREHOUSE, {
+    refetchQueries: [{ query: GET_WAREHOUSES }],
+
     onCompleted: () => {
-      router.push("/suppliers");
+      router.push("/warehouses");
     },
   });
   const handleChange = (e) => {
@@ -41,28 +44,28 @@ export default function CreateSupplier() {
     e.preventDefault();
     console.log(formData);
     // Aquí puedes agregar la lógica para enviar los datos del formulario
+
     try {
-      await createSupplier({
+      await updateWarehouse({
         variables: {
-          supplierInput: {
+          id,
+          warehouseInput: {
             name: formData.name,
-            nit: formData.nit,
+            location: formData.location,
             phone: formData.phone,
           },
         },
       });
-    } catch(err) {
-      console.error('Error creando el proveedor', err);
+    } catch (err) {
+      console.error("Error actualizando el Almacen", err);
     }
   };
   return (
     <>
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-        
-          <h2 className="text-3xl font-bold text-center text-black mb-10">
-            Agregar Proveedor
-          </h2>
-          
+        <h2 className="text-3xl font-bold text-center text-black mb-10">
+          Actualizar Almacen
+        </h2>
 
         <form
           onSubmit={handleSubmit}
@@ -82,14 +85,14 @@ export default function CreateSupplier() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="nit" className="block text-gray-700">
-              nit
+            <label htmlFor="location" className="block text-gray-700">
+              Location
             </label>
             <input
               type="text"
-              id="nit"
-              name="nit"
-              value={formData.nit}
+              id="location"
+              name="location"
+              value={formData.location}
               onChange={handleChange}
               className="text-black mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
@@ -109,9 +112,9 @@ export default function CreateSupplier() {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Agregar
+            Actualizar
           </button>
         </form>
       </div>

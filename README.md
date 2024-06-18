@@ -1,8 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Frontend Para un Sistema de Inventarios
+Este es un proyecto desarrollado en  [Next.js](https://nextjs.org/) utilizando Apollo Client.
 
-## Getting Started
+## Empezando
 
-First, run the development server:
+Descarga el proyecto
+```bash
+git clone https://github.com/carlosribera/next-with-apollo.git
+```
+Instala los paquetes de node
+```bash
+npm install
+# or
+npm i
+```
+
+Primero, ejecuta el servidor de desarrollo:
 
 ```bash
 npm run dev
@@ -14,7 +26,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre tu navegador [http://localhost:3000](http://localhost:3000) para ver los resultados.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 

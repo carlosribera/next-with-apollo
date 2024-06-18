@@ -6,7 +6,7 @@ import { gql, useQuery } from "@apollo/client";
 import DataTable from "react-data-table-component";
 const query = gql`
   query {
-    usuarios {
+    getAllUsers {
       id
       username
       isEnabled
@@ -28,9 +28,13 @@ function UserPage() {
         Loading...
       </p>
     );
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) {
+    if (error.message === "Forbidden") {
+      window.location.href = "/dashboard";
+    }
+  }
 
-  const usuarios = data?.usuarios || [];
+  const usuarios = data?.getAllUsers || [];
   const columns = [
     {
       name: "NOMBRE",
@@ -44,26 +48,26 @@ function UserPage() {
       name: "ESTADO",
       selector: (row) => (row.isEnabled ? "Activo" : "Inactivo"),
     },
-  ]
+  ];
 
   const customStyles = {
-    
     headCells: {
       style: {
-        fontSize: '14px',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#155E75',
+        fontSize: "14px",
+        fontWeight: "bold",
+        color: "#FFFFFF",
+        backgroundColor: "#155E75",
       },
     },
   };
-    
+
   return (
     <div className="bg-gray-100 flex flex-col justify-center items-center h-screen">
-      
       {usuarios.length > 0 ? (
         <div className="rounded-t-2xl">
-          <h2 className="text-3xl font-bold text-center text-black mb-5">LISTA DE USUARIOS</h2>
+          <h2 className="text-3xl font-bold text-center text-black mb-5">
+            LISTA DE USUARIOS
+          </h2>
           <DataTable
             // title="Lista de Usuarios"
             customStyles={customStyles}
@@ -72,10 +76,9 @@ function UserPage() {
             pagination
             paginationPerPage={6}
             fixedHeader
-            highlightOnHover   
-            noDataComponent="No existen usuarios"         
+            highlightOnHover
+            noDataComponent="No existen usuarios"
           />
-
         </div>
       ) : (
         <p>No users</p>

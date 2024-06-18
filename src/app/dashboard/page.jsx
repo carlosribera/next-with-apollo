@@ -1,5 +1,13 @@
+"use client";
 import Link from "next/link";
+import UseAuth from '../hooks/useAuth';
+
 export default function dashboardPage() {
+  UseAuth();
+  const signOut = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/auth/login";
+  };
 
   return (
     <div className="bg-gray-100 flex flex-col justify-center items-center h-screen">
@@ -27,6 +35,18 @@ export default function dashboardPage() {
             Productos
           </button>
         </Link>
+        <Link href="/inventories">
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Inventario
+          </button>
+        </Link>
+        <Link href="/warehouses">
+          <button className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+            Almacenes
+          </button>
+        </Link>
+      </div>
+      <div className="flex gap-4 mt-4">
         <Link href="/purchases">
           <button className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded">
             Compra
@@ -37,6 +57,14 @@ export default function dashboardPage() {
             Venta
           </button>
         </Link>
+      </div>
+      <div className="mt-4">
+        <button
+          onClick={() => signOut()}
+          className="bg-red-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
+        >
+          cerrrar Session
+        </button>
       </div>
     </div>
   );
